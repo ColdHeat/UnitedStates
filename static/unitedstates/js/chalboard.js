@@ -1,67 +1,6 @@
 var challenges;
-
-// States are ordered in the order by which they joined the union.
-// var states = ['DE', 'PA', 'NJ', 'GA', 'CT', 'MA', 'MD', 'SC',
-//     'NH', 'VA', 'NY', 'NC', 'RI', 'VT', 'KY', 'TN', 'OH', 'LA',
-//     'IN', 'MS', 'IL', 'AL', 'ME', 'MO', 'AR', 'MI', 'FL', 'TX',
-//     'IA', 'WI', 'CA', 'MN', 'OR', 'KS', 'WV', 'NV', 'NE', 'CO',
-//     'ND', 'SD', 'MT', 'WA', 'ID', 'WY', 'UT', 'OK', 'NM', 'AZ',
-//     'AK', 'HI'];
-
-var states_used = [];
-
-var states = {
-    'DE':1,
-    'PA':2,
-    'NJ':3,
-    'GA':4,
-    'CT':5,
-    'MA':6,
-    'MD':7,
-    'SC':8,
-    'NH':9,
-    'VA':10,
-    'NY':11,
-    'NC':12,
-    'RI':13,
-    'VT':14,
-    'KY':15,
-    'TN':16,
-    'OH':17,
-    'LA':18,
-    'IN':19,
-    'MS':20,
-    'IL':21,
-    'AL':22,
-    'ME':23,
-    'MO':24,
-    'AR':25,
-    'MI':26,
-    'FL':27,
-    'TX':28,
-    'IA':29,
-    'WI':30,
-    'CA':31,
-    'MN':32,
-    'OR':33,
-    'KS':34,
-    'WV':35,
-    'NV':36,
-    'NE':37,
-    'CO':38,
-    'ND':39,
-    'SD':40,
-    'MT':41,
-    'WA':42,
-    'ID':43,
-    'WY':44,
-    'UT':45,
-    'OK':46,
-    'NM':47,
-    'AZ':48,
-    'AK':49,
-    'HI':50
-}
+var states;
+var states_used;
 
 
 function loadchal(id) {
@@ -233,6 +172,24 @@ function loadchals_to_states(){
     $.get(script_root + "/chals", function (data) {
         challenges = $.parseJSON(JSON.stringify(data));
         // console.log(challenges);
+
+        states_used = [];
+
+        states = {
+            'DE':1, 'PA':2, 'NJ':3, 'GA':4,
+            'CT':5, 'MA':6, 'MD':7, 'SC':8,
+            'NH':9, 'VA':10, 'NY':11, 'NC':12,
+            'RI':13, 'VT':14, 'KY':15, 'TN':16,
+            'OH':17, 'LA':18, 'IN':19, 'MS':20,
+            'IL':21, 'AL':22, 'ME':23, 'MO':24,
+            'AR':25, 'MI':26, 'FL':27, 'TX':28,
+            'IA':29, 'WI':30, 'CA':31, 'MN':32,
+            'OR':33, 'KS':34, 'WV':35, 'NV':36,
+            'NE':37, 'CO':38, 'ND':39, 'SD':40,
+            'MT':41, 'WA':42, 'ID':43, 'WY':44,
+            'UT':45, 'OK':46, 'NM':47, 'AZ':48,
+            'AK':49, 'HI':50
+        }
 
         var categories = [];
         var category_colors = [];
