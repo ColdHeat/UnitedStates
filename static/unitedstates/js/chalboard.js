@@ -1,12 +1,67 @@
 var challenges;
 
 // States are ordered in the order by which they joined the union.
-var states = ['DE', 'PA', 'NJ', 'GA', 'CT', 'MA', 'MD', 'SC',
-    'NH', 'VA', 'NY', 'NC', 'RI', 'VT', 'KY', 'TN', 'OH', 'LA',
-    'IN', 'MS', 'IL', 'AL', 'ME', 'MO', 'AR', 'MI', 'FL', 'TX',
-    'IA', 'WI', 'CA', 'MN', 'OR', 'KS', 'WV', 'NV', 'NE', 'CO',
-    'ND', 'SD', 'MT', 'WA', 'ID', 'WY', 'UT', 'OK', 'NM', 'AZ',
-    'AK', 'HI'];
+// var states = ['DE', 'PA', 'NJ', 'GA', 'CT', 'MA', 'MD', 'SC',
+//     'NH', 'VA', 'NY', 'NC', 'RI', 'VT', 'KY', 'TN', 'OH', 'LA',
+//     'IN', 'MS', 'IL', 'AL', 'ME', 'MO', 'AR', 'MI', 'FL', 'TX',
+//     'IA', 'WI', 'CA', 'MN', 'OR', 'KS', 'WV', 'NV', 'NE', 'CO',
+//     'ND', 'SD', 'MT', 'WA', 'ID', 'WY', 'UT', 'OK', 'NM', 'AZ',
+//     'AK', 'HI'];
+
+var states_used = [];
+
+var states = {
+    'DE':1,
+    'PA':2,
+    'NJ':3,
+    'GA':4,
+    'CT':5,
+    'MA':6,
+    'MD':7,
+    'SC':8,
+    'NH':9,
+    'VA':10,
+    'NY':11,
+    'NC':12,
+    'RI':13,
+    'VT':14,
+    'KY':15,
+    'TN':16,
+    'OH':17,
+    'LA':18,
+    'IN':19,
+    'MS':20,
+    'IL':21,
+    'AL':22,
+    'ME':23,
+    'MO':24,
+    'AR':25,
+    'MI':26,
+    'FL':27,
+    'TX':28,
+    'IA':29,
+    'WI':30,
+    'CA':31,
+    'MN':32,
+    'OR':33,
+    'KS':34,
+    'WV':35,
+    'NV':36,
+    'NE':37,
+    'CO':38,
+    'ND':39,
+    'SD':40,
+    'MT':41,
+    'WA':42,
+    'ID':43,
+    'WY':44,
+    'UT':45,
+    'OK':46,
+    'NM':47,
+    'AZ':48,
+    'AK':49,
+    'HI':50
+}
 
 
 function loadchal(id) {
@@ -14,7 +69,6 @@ function loadchal(id) {
         return e.id == id;
     })[0];
 
-    console.log(obj);
     updateChalWindow(obj);
 }
 
@@ -148,16 +202,12 @@ function updatesolves(cb){
         var solves = $.parseJSON(JSON.stringify(data));
         var chals = Object.keys(solves);
 
-        console.log(solves);
-
         for (var i = 0; i < chals.length; i++) {
             var obj = $.grep(challenges['game'], function (e) {
                 return e.name == chals[i];
             })[0];
             obj.solves = solves[chals[i]];
-            console.log(obj);
         };
-        console.log(challenges);
         if (cb) {
             cb();
         }
@@ -178,96 +228,97 @@ function getsolves(id){
   });
 }
 
-// function loadchals() {
-//     $.get(script_root + "/chals", function (data) {
-//         var categories = [];
-//         challenges = $.parseJSON(JSON.stringify(data));
-//
-//         $('#challenges-board').html("");
-//
-//         for (var i = challenges['game'].length - 1; i >= 0; i--) {
-//             challenges['game'][i].solves = 0
-//             if ($.inArray(challenges['game'][i].category, categories) == -1) {
-//                 var category = challenges['game'][i].category;
-//                 categories.push(category);
-//
-//                 var categoryid = category.replace(/ /g,"-").hashCode();
-//                 var categoryrow = $('' +
-//                     '<div id="{0}-row">'.format(categoryid) +
-//                         '<div class="category-header col-md-2">' +
-//                         '</div>' +
-//                         '<div class="category-challenges col-md-12">' +
-//                             '<div class="chal-row"></div>' +
-//                         '</div>' +
-//                     '</div>');
-//                 categoryrow.find(".category-header").append($("<h3>"+ category +"</h3>"));
-//
-//                 $('#challenges-board').append(categoryrow);
-//             }
-//         };
-//
-//         for (var i = 0; i <= challenges['game'].length - 1; i++) {
-//             var chalinfo = challenges['game'][i];
-//             var challenge = chalinfo.category.replace(/ /g,"-").hashCode();
-//             var chalid = chalinfo.name.replace(/ /g,"-").hashCode();
-//             var catid = chalinfo.category.replace(/ /g,"-").hashCode();
-//             var chalwrap = $("<div id='{0}' class='challenge-wrapper col-md-2'></div>".format(chalid));
-//             var chalbutton = $("<button class='challenge-button trigger theme-background hide-text' value='{0}' data-toggle='modal' data-target='#chal-window'></div>".format(chalinfo.id));
-//             var chalheader = $("<h5>{0}</h5>".format(chalinfo.name));
-//             var chalscore = $("<span>{0}</span>".format(chalinfo.value));
-//             chalbutton.append(chalheader);
-//             chalbutton.append(chalscore);
-//             chalwrap.append(chalbutton);
-//
-//             $("#"+ catid +"-row").find(".category-challenges > .chal-row").append(chalwrap);
-//         };
-//
-//         var load_location_hash = function () {
-//             if (window.location.hash.length > 0) {
-//                 loadchalbyname(window.location.hash.substring(1));
-//                 $("#chal-window").modal("show");
-//             }
-//         };
-//
-//         updatesolves(load_location_hash);
-//         marksolves();
-//
-//         $('.challenge-button').click(function (e) {
-//             loadchal(this.value);
-//         });
-//     });
-// }
-
 
 function loadchals_to_states(){
     $.get(script_root + "/chals", function (data) {
         challenges = $.parseJSON(JSON.stringify(data));
-        console.log(challenges);
+        // console.log(challenges);
 
         var categories = [];
         var category_colors = [];
         var statelabels = {};
         var chal_areas = {};
+        var state_keys = Object.keys(states);
+        var chals_used = [];
 
         for (var i = 0; i <= challenges['game'].length - 1; i++){
             var chal = challenges['game'][i];
-            console.log(states[i]);
 
             if ($.inArray(challenges['game'][i].category, categories) == -1) {
                 var category = challenges['game'][i].category;
                 categories.push(category);
             }
 
-            chal_areas[states[chal.id - 1]] = { // This -1 is done to align the DB id's with the state indexes in the array.
-                value: chal.category,
-                tooltip: {content: "<span style=\"font-weight:bold;\">{0} {1}: {2}</span>".format(chal.category, parseInt(chal.value), chal.name)}
-            };
+            chal.tags.forEach(function(tag) {
+                if ($.inArray(tag, states_used) == -1){ // State asked for is available
+                    chal_areas[tag] = {
+                        value: chal.category,
+                        tooltip: {content: "<span style=\"font-weight:bold;\">{0} {1}: {2}</span>".format(chal.category, parseInt(chal.value), chal.name)}
+                    };
+                    states_used.push(tag);
+                    states[ state_keys[chal.id - 1] ] = 0;
+                    states[tag] = chal.id
+                    chals_used.push(chal.id);
+                } else { // State asked for is unavailable.
+                    var curr_chal = states[tag];
+                    var curr_chal = $.grep(challenges['game'], function (e) {  // Get the chal that's currently there
+                        return e.id == curr_chal;
+                    })[0];
 
-            statelabels[states[i]] = parseInt(chal.value);
+                    // Finding a new state for the old challenge
+                    for (var i = 0; i < state_keys.length; i++) {
+                        var state_asked = state_keys[i];
+                        if ($.inArray(state_asked, states_used) == -1){
+                            chal_areas[state_asked] = {
+                                value: curr_chal.category,
+                                tooltip: {content: "<span style=\"font-weight:bold;\">{0} {1}: {2}</span>".format(curr_chal.category, parseInt(curr_chal.value), curr_chal.name)}
+                            };
+                            states_used.push(state_asked);
+                            states[ state_keys[chal.id - 1] ] = 0;
+                            states[state_asked] = curr_chal.id
+                        }
+                    }
+
+                    // Insert the challenge into the previous area
+                    chal_areas[tag] = {
+                        value: chal.category,
+                        tooltip: {content: "<span style=\"font-weight:bold;\">{0} {1}: {2}</span>".format(chal.category, parseInt(chal.value), chal.name)}
+                    };
+                    states_used.push(tag);
+                    states[tag] = chal.id
+                    chals_used.push(chal.id);
+                }
+            });
+
+            if ($.inArray(chal.id, chals_used) == -1){ // This challenge needs a state
+                var state_asked = state_keys[chal.id - 1];
+                if ($.inArray(state_asked, states_used) == -1){ // The default state is not in use
+                    chal_areas[state_asked] = {
+                        value: chal.category,
+                        tooltip: {content: "<span style=\"font-weight:bold;\">{0} {1}: {2}</span>".format(chal.category, parseInt(chal.value), chal.name)}
+                    };
+                    states_used.push(state_asked);
+                    states[state_asked] = chal.id
+                    chals_used.push(chal.id);
+                } else { // The default state is already in use
+                    for (var i = 0; i < state_keys.length; i++) {
+                        var state_asked = state_keys[i];
+                        if ($.inArray(state_asked, states_used) == -1){
+                            chal_areas[state_asked] = {
+                                value: chal.category,
+                                tooltip: {content: "<span style=\"font-weight:bold;\">{0} {1}: {2}</span>".format(chal.category, parseInt(chal.value), chal.name)}
+                            };
+                            states_used.push(state_asked);
+                            states[state_asked] = chal.id
+                            chals_used.push(chal.id);
+                        }
+                    }
+                }
+            }
+
         }
 
         for (var i = 0; i <= categories.length - 1; i++){
-            console.log(categories[i]);
             category_colors.push({
                 attrs: {
                     fill: colorhash_s(categories[i])
@@ -276,8 +327,6 @@ function loadchals_to_states(){
                 sliceValue: categories[i]
             });
         }
-
-        console.log(category_colors);
 
         var load_location_hash = function () {
             if (window.location.hash.length > 0) {
@@ -308,14 +357,11 @@ function loadchals_to_states(){
                     },
                     eventHandlers: {
                         click: function (e, id, mapElem, textElem) {
-                            var chalid = states.indexOf(id) + 1;
-                            console.log(states.indexOf(id));
-                            console.log(chalid);
+                            if ($.inArray(id, states_used) == -1)
+                                return;
+                            var chalid = states[id];
                             loadchal(chalid);
                             $("#chal-window").modal("show");
-                            console.log(id);
-                            console.log(mapElem);
-                            console.log(textElem);
                         }
                     }
                 }
@@ -367,7 +413,6 @@ $.extend({
 
 function colorhash (x) {
     color = "";
-    console.log(x);
     var start = x/8
     for (var i = start; i <= x; i+=start){
         color += i.toString(16).replace(/\W/g, '')
