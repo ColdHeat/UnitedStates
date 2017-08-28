@@ -53,3 +53,36 @@ function colorhash (x) {
 function htmlentities(string) {
     return $('<div/>').text(string).html();
 }
+
+Handlebars.registerHelper('if_eq', function(a, b, opts) {
+    if (a == b) {
+        return opts.fn(this);
+    } else {
+        return opts.inverse(this);
+    }
+});
+
+Handlebars.registerHelper('splitSlash', function(filename) {
+    var filename = filename.split("/");
+    filename = filename[filename.length - 1];
+    return filename;
+});
+
+// http://stepansuvorov.com/blog/2014/04/jquery-put-and-delete/
+jQuery.each(["put", "delete"], function(i, method) {
+    jQuery[method] = function(url, data, callback, type) {
+        if (jQuery.isFunction(data)) {
+            type = type || callback;
+            callback = data;
+            data = undefined;
+        }
+
+        return jQuery.ajax({
+            url: url,
+            type: method,
+            dataType: type,
+            data: data,
+            success: callback
+        });
+    };
+});

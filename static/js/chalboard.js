@@ -1,6 +1,7 @@
 var challenges;
 var states;
 var states_used;
+var templates = {};
 
 
 function loadchal(id) {
@@ -20,34 +21,56 @@ function loadchalbyname(chalname) {
 }
 
 function updateChalWindow(obj) {
-    window.location.replace(window.location.href.split('#')[0] + '#' + obj.name);
-    var chal = $('#chal-window');
-    chal.find('.chal-name').text(obj.name);
-    chal.find('.chal-desc').html(marked(obj.description, {'gfm':true, 'breaks':true}));
-    chal.find('.chal-files').empty();
-    for (var i = 0; i < obj.files.length; i++) {
-        var filename = obj.files[i].split('/');
-        filename = filename[filename.length - 1];
-        $('#chal-window').find('.chal-files').append("<div class='col-md-3 file-button-wrapper'><a class='file-button' href='" + script_root + '/files/' + obj.files[i] + "'><label class='challenge-wrapper file-wrapper hide-text'>" + filename + "</label></a></div>")
-    }
+    $.get(script_root + '/themes/original/static/js/templates/challenges/'+obj.type+'/'+obj.type+'-challenge-modal.hbs', function(template_data){
+        $('#chal-window').empty();
+        templates[obj.type] = template_data;
+        var template_data = templates[obj.type];
+        template_data['script_root'] = script_root;
+        var template = Handlebars.compile(template_data);
+        var solves = obj.solves == 1 ? " Solve" : " Solves";
+        solves = obj.solves + solves;
 
-    var tags = chal.find('.chal-tags');
-    tags.empty();
-    var tag = "<span class='label label-primary chal-tag'>{0}</span>";
-    for (var i = 0; i < obj.tags.length; i++){
-        var data = tag.format(obj.tags[i]);
-        tags.append($(data));
-    }
+        var nonce = $('#nonce').val();
+        var wrapper  = {
+            id: obj.id,
+            name: obj.name,
+            value: obj.value,
+            tags: obj.tags,
+            desc: obj.description,
+            solves: solves,
+            files: obj.files,
+            hints: obj.hints
+        };
 
-    chal.find('.chal-value').text(obj.value);
-    chal.find('.chal-category').text(obj.category);
-    chal.find('#chal-id').val(obj.id);
-    var solves = obj.solves == 1 ? " Solve" : " Solves";
-    chal.find('.chal-solves').text(obj.solves + solves);
-    $('#answer').val("");
+        $('#chal-window').append(template(wrapper));
+        $.getScript(script_root + '/themes/original/static/js/templates/challenges/'+obj.type+'/'+obj.type+'-challenge-script.js',
+            function() {
+                // Handle Solves tab
+                $('.chal-solves').click(function (e) {
+                    getsolves($('#chal-id').val())
+                });
+                $('.nav-tabs a').click(function (e) {
+                    e.preventDefault();
+                    $(this).tab('show')
+                });
 
-    $('pre code').each(function(i, block) {
-        hljs.highlightBlock(block);
+                // Handle modal toggling
+                $('#chal-window').on('hide.bs.modal', function (event) {
+                    $("#answer-input").removeClass("wrong");
+                    $("#answer-input").removeClass("correct");
+                    $("#incorrect-key").slideUp();
+                    $("#correct-key").slideUp();
+                    $("#already-solved").slideUp();
+                    $("#too-fast").slideUp();
+                });
+
+                // $('pre code').each(function(i, block) {
+                //     hljs.highlightBlock(block);
+                // });
+
+                window.location.replace(window.location.href.split('#')[0] + '#' + obj.name);
+                $('#chal-window').modal();
+        });
     });
 }
 
@@ -74,11 +97,11 @@ function submitkey(chal, key, nonce) {
         result_message.text(result.message);
 
         if (result.status == -1){
-          window.location="/login"
+          window.location = script_root + "/login?next=" + script_root + window.location.pathname + window.location.hash
           return
         }
         else if (result.status == 0){ // Incorrect key
-            result_notification.addClass('alert alert-danger alert-dismissable');
+            result_notification.addClass('alert alert-danger alert-dismissable text-center');
             result_notification.slideDown();
 
             answer_input.removeClass("correct");
@@ -88,7 +111,7 @@ function submitkey(chal, key, nonce) {
             }, 3000);
         }
         else if (result.status == 1){ // Challenge Solved
-            result_notification.addClass('alert alert-success alert-dismissable');
+            result_notification.addClass('alert alert-success alert-dismissable text-center');
             result_notification.slideDown();
 
             $('.chal-solves').text((parseInt($('.chal-solves').text().split(" ")[0]) + 1 +  " Solves") );
@@ -98,13 +121,13 @@ function submitkey(chal, key, nonce) {
             answer_input.addClass("correct");
         }
         else if (result.status == 2){ // Challenge already solved
-            result_notification.addClass('alert alert-info alert-dismissable');
+            result_notification.addClass('alert alert-info alert-dismissable text-center');
             result_notification.slideDown();
 
             answer_input.addClass("correct");
         }
         else if (result.status == 3){ // Keys per minute too high
-            result_notification.addClass('alert alert-warning alert-dismissable');
+            result_notification.addClass('alert alert-warning alert-dismissable text-center');
             result_notification.slideDown();
 
             answer_input.addClass("too-fast");
@@ -139,13 +162,13 @@ function marksolves(cb) {
 function updatesolves(cb){
     $.get(script_root + '/chals/solves', function (data) {
         var solves = $.parseJSON(JSON.stringify(data));
-        var chals = Object.keys(solves);
+        var chalids = Object.keys(solves);
 
-        for (var i = 0; i < chals.length; i++) {
+        for (var i = 0; i < chalids.length; i++) {
             var obj = $.grep(challenges['game'], function (e) {
-                return e.name == chals[i];
+                return e.id == chalids[i];
             })[0];
-            obj.solves = solves[chals[i]];
+            obj.solves = solves[chalids[i]]
         };
         if (cb) {
             cb();

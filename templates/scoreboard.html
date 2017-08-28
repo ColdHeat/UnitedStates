@@ -7,6 +7,24 @@
     </div>
 </div>
 <div class="container main-container">
+    {% if errors %}
+    <div class="container main-container">
+        <div id='errors' class="row">
+    {% for error in errors %}
+            <h1>{{ error }}</h1>
+    {% endfor %}
+        </div>
+    </div>
+    {% else %}
+
+        {% if score_frozen %}
+        <div class="container main-container">
+            <div class="row">
+                <h1>Scoreboard has been frozen.</h1>
+            </div>
+        </div>
+        {% endif %}
+
     <div id="score-graph"></div>
     <br>
 
@@ -27,11 +45,12 @@
         {% endfor %}
         </tbody>
     </table>
+    {% endif %}
 </div>
 {% endblock %}
 
 {% block scripts %}
-    <script src="{{ request.script_root }}/static/{{ ctf_theme() }}/js/vendor/plotly.min.js"></script>
-    <script src="{{ request.script_root }}/static/{{ ctf_theme() }}/js/utils.js"></script>
-    <script src="{{ request.script_root }}/static/{{ ctf_theme() }}/js/scoreboard.js"></script>
+    <script src="{{ request.script_root }}/themes/{{ ctf_theme() }}/static/js/vendor/plotly.min.js"></script>
+    <script src="{{ request.script_root }}/themes/{{ ctf_theme() }}/static/js/utils.js"></script>
+    <script src="{{ request.script_root }}/themes/{{ ctf_theme() }}/static/js/scoreboard.js"></script>
 {% endblock %}
